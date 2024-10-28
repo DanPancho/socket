@@ -25,8 +25,14 @@ public class ClientHandler implements Runnable {
                 DataInputStream din = new DataInputStream(inputStream);) {
             clientSocketPeticion.setSoTimeout(5000);
             clientSocketPeticion.setKeepAlive(true);
-           // byte[] data = readData(din);
-            log.info("DATA recibida");
+            // byte[] data = readData(din);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            log.info("ANTES WHILE");
+            while ((bytesRead = din.read(buffer)) != -1) {
+                String message = new String(buffer, 0, bytesRead);
+                log.info("Mensaje recibido: {}", message);
+            }
         } catch (Exception e) {
             log.info(e.getMessage());
         } finally {
@@ -46,14 +52,13 @@ public class ClientHandler implements Runnable {
             return new byte[0];
 
         BigInteger messageLength = new BigInteger(1, lengthData);
-        
 
         byte[] data = new byte[messageLength.intValue()];
         try {
             count = din.read(data);
-       
+
         } catch (SocketTimeoutException e) {
-          
+
             return new byte[0];
         }
         return data;
